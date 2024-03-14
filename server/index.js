@@ -69,5 +69,3 @@ mongoose
   .catch((error) => console.log(`${error} did not connect`));
 
 
-/* time 5:18:00 client */
-//npm run start
