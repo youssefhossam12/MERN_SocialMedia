@@ -9,6 +9,12 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
+  Popover,
+  //List,
+  //ListItem,
+  //Popper,
+ // Paper,
+  //ClickAwayListener,
 } from "@mui/material";
 import {
   Search,
@@ -27,6 +33,10 @@ import FlexBetween from "components/FlexBetween";
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const token = useSelector((state) => state.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
@@ -40,6 +50,32 @@ const Navbar = () => {
   const alt = theme.palette.background.alt;
 
   const fullName = user ? `${user.firstName || ''} ${user.lastName || ''}` : '';
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/users/search?query=${searchQuery}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      setSearchResults(data || []); // Initialize searchResults with an empty array if data is falsy
+      setAnchorEl(data.length > 0 ? document.getElementById("searchPopover") : null);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setSearchResults([]); // Handle error by resetting searchResults to an empty array
+      setAnchorEl(null);
+    }
+  };
+
+  const handleProfileClick = (userId) => {
+    navigate(`/profile/${userId}`);
+    setAnchorEl(null);
+  };
+
 
   //const fullName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '';
   //const fullName = `${user.firstName} ${user.lastName}`;
@@ -68,8 +104,12 @@ const Navbar = () => {
             gap="3rem"
             padding="0.1rem 1.5rem"
           >
-            <InputBase placeholder="Search..." />
-            <IconButton>
+            <InputBase 
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <IconButton onClick={handleSearch}>
               <Search />
             </IconButton>
           </FlexBetween>
@@ -193,6 +233,34 @@ const Navbar = () => {
           </FlexBetween>
         </Box>
       )}
+
+      {/* Popover for Search Results */}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <Box id="searchPopover">
+          {searchResults.map((result) => (
+            <div
+              key={result.userId}
+              button
+              onClick={() => handleProfileClick(result.userId)}
+            >
+              {`${result.firstName} ${result.lastName}`}
+            </div>
+          ))}
+        </Box>
+      </Popover>
+
     </FlexBetween>
   );
 };

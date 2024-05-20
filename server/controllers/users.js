@@ -12,6 +12,24 @@ export const getUser = async (req, res) => {
     }
 }
 
+export const searchUsers = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const users = await User.find({
+            $or: [
+                { firstName: { $regex: query, $options: 'i' } },
+                { lastName: { $regex: query, $options: 'i' } },
+                // Add more fields for searching if needed
+            ]
+        }).select('firstName lastName');
+
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+
 export const getUserFriends = async (req, res) => {
    try {
     const {id} = req.params;
