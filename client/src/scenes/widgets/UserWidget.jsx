@@ -105,7 +105,7 @@ import {
           <FlexBetween gap="1rem" mb="0.5rem">
             <FlexBetween gap="1rem">
             <a href="https://www.x.com" >
-              <img src="../assets/twitter.png" alt="twitter" />
+              <img src="../assets/twitter.png" alt="X.com" />
             </a>
               <Box>
                 <Typography color={main} fontWeight="500" >

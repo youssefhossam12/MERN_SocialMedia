@@ -1,3 +1,4 @@
+
 import User from "../models/User.js";;
 
 /*Read*/
@@ -21,7 +22,7 @@ export const searchUsers = async (req, res) => {
                 { lastName: { $regex: query, $options: 'i' } },
                 // Add more fields for searching if needed
             ]
-        }).select('firstName lastName');
+        }).select('firstName lastName picturePath');
 
         res.status(200).json(users);
     } catch (err) {

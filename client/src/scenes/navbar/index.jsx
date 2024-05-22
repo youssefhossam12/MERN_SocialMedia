@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   IconButton,
@@ -9,7 +9,6 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
-  Popover,
   //List,
   //ListItem,
   //Popper,
@@ -30,12 +29,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import UserImage from "components/UserImage";
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [anchorEl, setAnchorEl] = useState(null);
   const token = useSelector((state) => state.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,37 +50,43 @@ const Navbar = () => {
 
   const fullName = user ? `${user.firstName || ''} ${user.lastName || ''}` : '';
 
-  const handleSearch = async () => {
+  const handleSearch = async (value) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/users/search?query=${searchQuery}`,
+        `http://localhost:3001/users/search?query=${value}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       const data = await response.json();
-      console.log(data);
-      setSearchResults(data || []); // Initialize searchResults with an empty array if data is falsy
-      setAnchorEl(data.length > 0 ? document.getElementById("searchPopover") : null);
+      console.log("data",data);
+      setSearchResults(data?data:[]);
+       // Initialize searchResults with an empty array if data is falsy
     } catch (error) {
       console.error('Error searching users:', error);
       setSearchResults([]); // Handle error by resetting searchResults to an empty array
-      setAnchorEl(null);
     }
   };
 
+  const handleChange=(value)=>{
+    setSearchQuery(value)
+if (value){
+handleSearch(value)
+}else{
+  setSearchResults([])
+}
+  }
+useEffect(()=>{
+console.log(searchResults)
+},[searchResults])
   const handleProfileClick = (userId) => {
     navigate(`/profile/${userId}`);
-    setAnchorEl(null);
   };
 
 
-  //const fullName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '';
-  //const fullName = `${user.firstName} ${user.lastName}`;
-
   return (
-    <FlexBetween padding="1rem 6%" backgroundColor={alt}>
+    <FlexBetween padding="1rem 6%" backgroundColor={alt} position="relative">
       <FlexBetween gap="1.75rem">
         <Typography
           fontWeight="bold"
@@ -103,15 +108,24 @@ const Navbar = () => {
             borderRadius="9px"
             gap="3rem"
             padding="0.1rem 1.5rem"
+            position="relative"
           >
             <InputBase 
               placeholder="Search..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleChange(e.target.value)}
             />
-            <IconButton onClick={handleSearch}>
+            <IconButton onClick={() => handleSearch(searchQuery)}>
               <Search />
             </IconButton>
+            <div className={`search-results ${searchResults.length > 0 ? "show-results" : ""}`}>
+              {searchResults.map((result) => (
+                <div className="results" key={result._id} onClick={() => handleProfileClick(result._id)}>
+                  <UserImage size="50" image={result.picturePath} alt={result.firstName}/>
+                  <span>{result.firstName} {result.lastName}</span>
+                </div>
+              ))}
+            </div>
           </FlexBetween>
         )}
       </FlexBetween>
@@ -233,34 +247,7 @@ const Navbar = () => {
           </FlexBetween>
         </Box>
       )}
-
-      {/* Popover for Search Results */}
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        <Box id="searchPopover">
-          {searchResults.map((result) => (
-            <div
-              key={result.userId}
-              button
-              onClick={() => handleProfileClick(result.userId)}
-            >
-              {`${result.firstName} ${result.lastName}`}
-            </div>
-          ))}
-        </Box>
-      </Popover>
-
+      
     </FlexBetween>
   );
 };

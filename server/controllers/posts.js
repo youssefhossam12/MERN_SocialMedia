@@ -19,9 +19,9 @@ export const createPost = async (req, res) => {
     });
     await newPost.save();
     const post = await Post.find();
-    res.status(201).json(post);
+    return res.status(201).json(post);
   } catch (err) {
-    res.status(409).json({ message: err.message });
+    return res.status(409).json({ message: err.message });
   }
 };
 
@@ -29,9 +29,9 @@ export const createPost = async (req, res) => {
 export const getFeedPosts = async (req, res) => {
   try {
     const post = await Post.find();
-    res.status(200).json(post);
+    return res.status(200).json(post);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    return res.status(404).json({ message: err.message });
   }
 };
 
@@ -39,9 +39,9 @@ export const getUserPosts = async (req, res) => {
   try {
     const { userId } = req.params;
     const post = await Post.find({ userId });
-    res.status(200).json(post);
+    return res.status(200).json(post);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    return res.status(404).json({ message: err.message });
   }
 };
 
@@ -65,32 +65,63 @@ export const likePost = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json(updatedPost);
+   return res.status(200).json(updatedPost);
   } catch (err) {
-    res.status(404).json({ message: err.message });
+    return res.status(404).json({ message: err.message });
   }
 };
 
-/*export const addComment = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { userId, firstName, comment } = req.body;
-
-    // Ensure userId is provided, fallback to id if not
-    const post = await Post.findById(id);
-
-    
-
-    // Assuming your Post model has a 'comments' field
-    post.comments.set({
-      firstName,
-      comment,
-    });
-
-    const updatedPost = await post.save();
-
-    res.status(201).json(updatedPost);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+export const getComments=async(req,res)=>{
+  try{
+    const {postId}=req.params;
+    const comments = await Post.findById(postId,'comments')
+    if (!comments) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+   return res.status(200).json(comments);
+  }catch(err){
+    return res.status(404).json({ message: err.message });
   }
-};*/
+}
+export const addComment = async (req, res) => {
+  try {
+    const {postId,firstName, comment} = req.body;
+    console.log(postId,firstName, comment)
+    const newComment={firstName:firstName,commentContent:comment}
+    // Ensure userId is provided, fallback to id if not
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {$push:{comments:newComment},
+      new:true
+      }
+    );
+    if (!updatedPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    return res.status(200).json(updatedPost);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+}
+
+export const deleteComment = async (req, res) => {
+  try {
+    const { postId, commentId } = req.body;
+
+    // Find the post by its ID and remove the comment with the specified commentId
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { $pull: { comments: { _id: commentId } } },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    return res.status(200).json(updatedPost);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};

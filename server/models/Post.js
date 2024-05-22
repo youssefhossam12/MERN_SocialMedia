@@ -22,8 +22,17 @@ const postSchema = mongoose.Schema(
       type: Map,
       of: Boolean,
     },
-    comments: {
-      type: Array,
+    comments:{
+      type: [{
+        firstName: {
+          type: String,
+          required: true,
+        },
+        commentContent: {
+          type: String,
+          required: true,
+        }
+      }],
       default: [],
     },
   },
