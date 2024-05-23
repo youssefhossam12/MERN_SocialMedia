@@ -20,7 +20,7 @@ export const searchUsers = async (req, res) => {
             $or: [
                 { firstName: { $regex: query, $options: 'i' } },
                 { lastName: { $regex: query, $options: 'i' } },
-                // Add more fields for searching if needed
+                
             ]
         }).select('firstName lastName picturePath');
 

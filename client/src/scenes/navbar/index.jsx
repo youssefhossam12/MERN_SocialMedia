@@ -82,6 +82,7 @@ console.log(searchResults)
 },[searchResults])
   const handleProfileClick = (userId) => {
     navigate(`/profile/${userId}`);
+    navigate(0);
   };
 
 
@@ -100,10 +101,9 @@ console.log(searchResults)
             },
           }}
         >
-          I2PTJA social media
+          SocialHub
         </Typography>
-        {isNonMobileScreens && (
-          <FlexBetween
+        <FlexBetween
             backgroundColor={neutralLight}
             borderRadius="9px"
             gap="3rem"
@@ -127,7 +127,6 @@ console.log(searchResults)
               ))}
             </div>
           </FlexBetween>
-        )}
       </FlexBetween>
 
       {/* DESKTOP NAV */}
@@ -140,7 +139,7 @@ console.log(searchResults)
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
+          {/*<Message sx={{ fontSize: "25px" }} />*/}
           {/*<Notifications sx={{ fontSize: "25px" }} />*/}
           {/*<Help sx={{ fontSize: "25px" }} />*/}
           <FormControl variant="standard" value={fullName}>

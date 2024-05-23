@@ -57,7 +57,7 @@ import {
           onClick={() => navigate(`/profile/${userId}`)}
         >
           <FlexBetween gap="1rem">
-            <UserImage image={picturePath} />
+            <UserImage image={picturePath}  fallbackImage="http://localhost:3001/assets/default.png"  />
             <Box>
               <Typography
                 variant="h4"

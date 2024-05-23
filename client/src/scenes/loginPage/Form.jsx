@@ -25,7 +25,7 @@ const registerSchema = yup.object().shape({
   password: yup.string().required("required"),
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
-  picture: yup.string().required("required"),
+  picture: yup.mixed(),
 });
 
 const loginSchema = yup.object().shape({
@@ -40,7 +40,7 @@ const initialValuesRegister = {
   password: "",
   location: "",
   occupation: "",
-  picture: "",
+  picture: null,
 };
 
 const initialValuesLogin = {
@@ -59,27 +59,48 @@ const Form = () => {
   const [error, setError] = useState(null);
 
   const register = async (values, onSubmitProps) => {
-    // this allows us to send form info with image
-    const formData = new FormData();
-    for (let value in values) {
-      formData.append(value, values[value]);
-    }
-    formData.append("picturePath", values.picture.name);
-
-    const savedUserResponse = await fetch(
-      "http://localhost:3001/auth/register",
-      {
-        method: "POST",
-        body: formData,
+    try {
+      // Check if the user uploaded a picture
+      let picture = values.picture ? values.picture : { name: 'default.png' };
+      
+      // If picture is null, assign default image
+      if (!values.picture) {
+        picture = new File([await fetch("http://localhost:3001/assets/default.png").then(res => res.blob())], "default.png");
       }
-    );
-    const savedUser = await savedUserResponse.json();
-    onSubmitProps.resetForm();
-
-    if (savedUser) {
-      setPageType("login");
+      
+      // this allows us to send form info with image
+      const formData = new FormData();
+      for (let value in values) {
+        formData.append(value, values[value]);
+      }
+      formData.append("picturePath", picture.name);
+  
+      const savedUserResponse = await fetch(
+        "http://localhost:3001/auth/register",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+  
+      if (!savedUserResponse.ok) {
+        // Handle error if response is not OK
+        setError("Registration failed. Please try again.");
+        return;
+      }
+  
+      const savedUser = await savedUserResponse.json();
+  
+      if (savedUser) {
+        onSubmitProps.resetForm();
+        setPageType("login");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Registration failed. Please try again.");
     }
   };
+  
 
   const login = async (values, onSubmitProps) => {
     try {
