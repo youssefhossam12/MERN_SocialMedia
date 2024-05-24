@@ -1,6 +1,3 @@
-
-// the app logic that we will use in our project.
-
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -34,6 +31,7 @@ export const authSlice = createSlice({
     },
     setPosts: (state, action) => {
       state.posts = action.payload.posts;
+      
     },
     setPost: (state, action) => {
       const updatedPosts = state.posts.map((post) => {
@@ -42,12 +40,12 @@ export const authSlice = createSlice({
       });
       state.posts = updatedPosts;
     },
-  },
-  removePost: (state, action) => {
-    const postIdToRemove = action.payload.postId;
-    state.posts = state.posts.filter(post => post._id !== postIdToRemove);
+    removePost: (state, action) => {
+      const postIdToRemove = action.payload.postId;
+      state.posts = state.posts.filter(post => post._id !== postIdToRemove);
+    },
   },
 });
-export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost, removePost } =
-  authSlice.actions;
+
+export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost, removePost } = authSlice.actions;
 export default authSlice.reducer;
