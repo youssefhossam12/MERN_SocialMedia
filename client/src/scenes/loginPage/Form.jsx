@@ -129,11 +129,8 @@ const Form = () => {
         navigate("/home");
       }
     } catch (error) {
-      // Handle the error by displaying an error message
+      
       console.error(error.message);
-      // You can set an error state here to display a message in your UI
-      
-      
     }
   };
   
@@ -173,6 +170,7 @@ const Form = () => {
               <>
                 <TextField
                   label="First Name"
+                  required="true"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.firstName}
@@ -185,6 +183,7 @@ const Form = () => {
                 />
                 <TextField
                   label="Last Name"
+                  required="true"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.lastName}
@@ -195,6 +194,7 @@ const Form = () => {
                 />
                 <TextField
                   label="Location"
+                  required="true"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.location}
@@ -205,6 +205,7 @@ const Form = () => {
                 />
                 <TextField
                   label="Occupation"
+                  required="true"
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.occupation}
@@ -253,6 +254,7 @@ const Form = () => {
 
             <TextField
               label="Email"
+              required="true"
               onBlur={handleBlur}
               onChange={handleChange}
               value={values.email}
@@ -263,6 +265,7 @@ const Form = () => {
             />
             <TextField
               label="Password"
+              required="true"
               type="password"
               onBlur={handleBlur}
               onChange={handleChange}
@@ -323,10 +326,7 @@ const Form = () => {
       )}
       
     </Formik>
-    
     </>
-
-
   );
 };
 

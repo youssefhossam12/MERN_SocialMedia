@@ -43,8 +43,6 @@ import {
       lastName,
       location,
       occupation,
-      //viewedProfile,
-      //impressions,
       friends,
     } = user;
   
